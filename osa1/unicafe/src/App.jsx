@@ -1,13 +1,60 @@
 import { useState } from 'react'
 
-const Button = (props) => (
-  <button onClick={props.handleClick}>
-    {props.text}
-  </button>
-)
+const Button = (props) => {
+
+  return(
+    <button onClick={props.handleClick}>
+      {props.text}
+    </button>
+  )
+}
+
+
+const Statistics = (props) => {
+    const avg = props.avg/props.all
+    const pos = (props.good/props.all)*100+"%"
+
+    if (props.all == 0){
+      return(
+        <div>
+          <h1>Statistics</h1>
+          <div>
+            <p>No feedback given</p>
+          </div>
+        </div>
+      )
+    }
+    {
+      return(
+        <div>
+          <h1>statistics</h1>
+          <div>
+            <table>
+            <StatisticsLine text="good" value={props.good}/>
+            <StatisticsLine text="neutral" value={props.neutral}/>
+            <StatisticsLine text="bad" value={props.bad}/>
+            <StatisticsLine text="all" value={props.all}/>
+            <StatisticsLine text="average" value={avg}/>
+            <StatisticsLine text="positive" value={pos}/>
+            </table>
+          </div>
+        </div>
+      )
+    }
+  }
+
+  
+  const StatisticsLine = (props) => {
+     return(
+      <tr>
+          <td>{props.text}</td>
+          <td>{props.value}</td>
+      </tr>
+     )
+  }
 
 const App = () => {
-  // tallenna napit omaan tilaansa
+
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
@@ -39,15 +86,7 @@ const App = () => {
           <Button handleClick={handleBad} text='bad'/>
           <Button handleClick={handleNeutral} text='neutral'/>
           <Button handleClick={handleGood} text='good'/>
-          </div>
-          <h1>statistics</h1>
-          <div>
-            <p>good {good}</p>
-            <p>neutral {neutral}</p>
-            <p>bad {bad}</p>
-            <p>all {all}</p>
-            <p>average {avg/all}</p>
-            <p>positive {(good/all)*100}%</p>
+          <Statistics good={good} neutral={neutral} bad={bad} all={all} avg={avg}/>
           </div>
       </div>
   )
