@@ -15,6 +15,8 @@ const App = () => {
   const [selected, setSelected] = useState(0)
   const [votes, setVotes] = useState(Array(anecdotes.length).fill(0))
   const [curVote, setCurVote ] = useState(votes[selected])
+  const [highestVote, setHighestVote] = useState(votes[selected])
+  const [highestAnecdote, setHighestAnecdote] = useState(anecdotes[selected])
 
 
   const setRand = () => {
@@ -24,19 +26,34 @@ const App = () => {
   }
 
   const increaseVote = () => {
-    const copy = votes
+    const copy = [...votes]
     copy[selected] += 1
     setVotes(copy)
-    setCurVote(votes[selected])
+    
+    const newVote = copy[selected]
+    setCurVote(newVote)
+
+    if (newVote>highestVote) {
+      setHighestVote(newVote)
+      const newAnecdote = anecdotes[selected]
+      setHighestAnecdote(newAnecdote)
+    }
+
   }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <div>has {curVote} votes</div>
       <div>
       <button onClick={increaseVote}>vote</button>
       <button onClick={setRand}>next anecdote</button>
+      <div>
+        <h1>Anecdote with the most votes</h1>
+        <div>{highestAnecdote}</div>
+        <div>has {highestVote} votes</div>
+      </div>
       </div>
     </div>
     
