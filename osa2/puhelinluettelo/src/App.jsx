@@ -1,38 +1,8 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
-
-
-const PersonForm = (props) => {
-  return(
-  <form onSubmit={props.addName}>
-      <div>
-        name: <input value={props.newName} onChange={props.handleNameChange}/>
-      </div>
-      <div> 
-        number: <input value={props.newNumber} onChange={props.handleNumberChange}/>
-      </div>
-      <div>
-        <button type="submit">add </button>
-      </div>
-    </form>
-)}
-
-const FilterField = (props) => {
-  return(
-  <div>
-  filter shown with <input value={props.newFilter} onChange={props.handleFilterChange}/>
-  </div>
-  )
-}
-
-const People = (props) => {
-  return(
-  <ul>{props.filteredPersons.map(person => 
-    <div key={person.name}>{person.name} {person.number}</div>
-    )}
-  </ul>
-  )
-}
+import PersonForm from './components/PersonForm.jsx'
+import FilterField from './components/FilterField.jsx'
+import People from './components/People.jsx'
+import personService from './services/persons.js'
 
 const App = () => {
 
@@ -41,37 +11,56 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] =useState('')
 
-  const hook = () => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
-      })
-  }
-  useEffect(hook, [])
+  useEffect(() => {
+    personService
+    .getAll()
+    .then(initialPeople => {
+      setPersons(initialPeople)
+    })
+  },[])
+
 
   const addName = (event) => {
     event.preventDefault()
-
-    if (persons.some(person => person.name === newName)) {
-      alert(`${newName} is already added to the phonebook`)
-      return
-    }
 
     const nameObject ={
       name: newName,
       number: newNumber
     }
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
+
+    if (persons.some(person => person.name === newName)) {
+      
+      const exists = persons.find(person => person.name === newName)
+
+      if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        personService.update(exists.id, nameObject)
+        .then(allPersons => setPersons(allPersons))
+        return
+      }
+    }
+
+    personService
+    .create(nameObject)
+    .then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
+      setNewName('')
+      setNewNumber('')
+    })
   }
 
 
+  const removeName = (props) => {
+    event.preventDefault()
+
+    if (window.confirm(`Delete ${props.name}`)) {
+      personService.deleteName(props.id)
+      .then(allPersons => setPersons(allPersons))
+    }
+  }
+
   const handleNameChange = (event) => {
     setNewName(event.target.value)
+    console.log(newName)
   }
 
 
@@ -96,7 +85,7 @@ const App = () => {
       <h2>add a new</h2>
         <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
       <h2>Numbers</h2>
-        <People filteredPersons={filteredPersons}/>
+        <People filteredPersons={filteredPersons} remove={removeName} />
     </div>
   )
 
