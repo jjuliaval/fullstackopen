@@ -3,6 +3,8 @@ import PersonForm from './components/PersonForm.jsx'
 import FilterField from './components/FilterField.jsx'
 import People from './components/People.jsx'
 import personService from './services/persons.js'
+import Notification from './components/Notification.jsx'
+import './index.css'
 
 const App = () => {
 
@@ -10,14 +12,15 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] =useState('')
+  const [message, setMessage] = useState(null)
+  const [className, setClassName] = useState('notif')
 
   useEffect(() => {
-    personService
-    .getAll()
-    .then(initialPeople => {
+    personService.getAll().then(initialPeople => {
+      console.log('Fetched people:', initialPeople)
       setPersons(initialPeople)
     })
-  },[])
+  }, [])
 
 
   const addName = (event) => {
@@ -29,20 +32,47 @@ const App = () => {
     }
 
     if (persons.some(person => person.name === newName)) {
-      
       const exists = persons.find(person => person.name === newName)
 
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         personService.update(exists.id, nameObject)
         .then(allPersons => setPersons(allPersons))
+        .catch(error => {
+        setClassName('error')
+        setMessage(`Information of ${newName} has already been removed from the server`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
+        setClassName('notif')
+        return
+        })
+
+        setMessage(`Changed number for ${newName}`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
         return
       }
+      else {
+        setNewName('')
+        setNewNumber('')
+        return
+      }
+      
     }
 
     personService
     .create(nameObject)
     .then(returnedPerson => {
       setPersons(persons.concat(returnedPerson))
+      setMessage(`Added ${newName}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
       setNewName('')
       setNewNumber('')
     })
@@ -55,12 +85,15 @@ const App = () => {
     if (window.confirm(`Delete ${props.name}`)) {
       personService.deleteName(props.id)
       .then(allPersons => setPersons(allPersons))
+      setMessage(`Deleted ${props.name}`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
-    console.log(newName)
   }
 
 
@@ -81,6 +114,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} style={className} ></Notification>
         <FilterField newFilter={newFilter} handleFilterChange={handleFilterChange}/>
       <h2>add a new</h2>
         <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange} newNumber={newNumber} handleNumberChange={handleNumberChange}/>
