@@ -1,0 +1,26 @@
+# flyctl launch added from testApp/.gitignore
+# Logs
+testApp/**/logs
+testApp/**/*.log
+testApp/**/npm-debug.log*
+testApp/**/yarn-debug.log*
+testApp/**/yarn-error.log*
+testApp/**/pnpm-debug.log*
+testApp/**/lerna-debug.log*
+
+testApp/**/node_modules
+testApp/**/dist
+testApp/**/dist-ssr
+testApp/**/*.local
+
+# Editor directories and files
+testApp/**/.vscode/*
+!testApp/**/.vscode/extensions.json
+testApp/**/.idea
+testApp/**/.DS_Store
+testApp/**/*.suo
+testApp/**/*.ntvs*
+testApp/**/*.njsproj
+testApp/**/*.sln
+testApp/**/*.sw?
+fly.toml
