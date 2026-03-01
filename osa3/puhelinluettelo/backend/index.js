@@ -1,7 +1,10 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const cors = require('cors')
 const morgan = require('morgan')
+const mongoose = require('mongoose')
+const Person = require('./models/Person')
 
 app.use(cors()) 
 app.use(express.json())
@@ -32,26 +35,25 @@ let  data = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(data)
+  Person.find({}).then(persons => {
+    response.json(persons)
+  })
 })
 
 app.get('/info', (request, response) => {
   const date = new Date()
-  response.send(
-    `<p>Phonebook has info for ${data.length} people</p>
-    <p>${date}</p>`
-  )
+  Person.countDocuments({}).then(count => {
+    response.send(
+      `<p>Phonebook has info for ${count} people</p>
+      <p>${date}</p>`
+    )
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-const id = request.params.id
-const person = data.find(person => person.id === id)
-
-  if (person) {
+  Person.findById(request.params.id).then(person => {
     response.json(person)
-  } else {
-    response.status(404).end()
-  }
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -71,25 +73,26 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const nameExists = data.find(person => person.name === body.name)
-  if (nameExists) {
-    return response.status(400).json({ 
-      error: 'name must be unique' 
-    })
-  }
-
-  const person = {
-    id: Math.floor(Math.random() * 1000000),
+  const person = new Person({
     name: body.name,
-    number: body.number
-  }
+    number: body.number,
+  })
+  
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 
-  data = data.concat(person)
-  response.json(person)
+  // const nameExists = data.find(person => person.name === body.name)
+  // if (nameExists) {
+  //   return response.status(400).json({ 
+  //     error: 'name must be unique' 
+  //   })
+  // }
+
 })
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

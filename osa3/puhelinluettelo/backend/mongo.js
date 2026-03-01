@@ -16,7 +16,7 @@ const personSchema = new mongoose.Schema({
   name: String,
   number: String,
 })
-const Person = mongoose.model('People', personSchema)
+const Person = mongoose.model('Person', personSchema)
 
 // if there are only 3 arguments, we want to show the phonebook
 if (process.argv.length == 3) {
@@ -26,7 +26,7 @@ if (process.argv.length == 3) {
     result.forEach(person => {
         phonebook.push(person)
     })
-    
+
     console.log('phonebook:')
     phonebook.forEach(person => {
         console.log(`${person.name} ${person.number}`)
