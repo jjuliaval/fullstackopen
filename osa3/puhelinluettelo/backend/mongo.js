@@ -26,20 +26,20 @@ const personSchema = new mongoose.Schema({
 const Person = mongoose.model('Person', personSchema)
 
 // if there are only 3 arguments, we want to show the phonebook
-if (process.argv.length == 3) {
-    const phonebook = []
+if (process.argv.length === 3) {
+  const phonebook = []
 
-    Person.find({}).then(result => {
+  Person.find({}).then(result => {
     result.forEach(person => {
-        phonebook.push(person)
+      phonebook.push(person)
     })
 
     console.log('phonebook:')
     phonebook.forEach(person => {
-        console.log(`${person.name} ${person.number}`)
-    }) 
-  mongoose.connection.close()
-})
+      console.log(`${person.name} ${person.number}`)
+    })
+    mongoose.connection.close()
+  })
 }
 else if (process.argv.length === 5) {  // if there are 5 arguments, we want to add a new person to the phonebook
   const name = process.argv[3]
@@ -50,10 +50,10 @@ else if (process.argv.length === 5) {  // if there are 5 arguments, we want to a
     number: number,
   })
 
-  person.save().then(result => {
-  console.log('person saved!')
-  mongoose.connection.close()
-})
+  person.save().then(() => {
+    console.log('person saved!')
+    mongoose.connection.close()
+  })
 }
 else { // if there are 4 arguments or more than 5 arguments, we want to show an error message
   console.log('invalid number of arguments')
