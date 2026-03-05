@@ -36,46 +36,54 @@ const App = () => {
 
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         personService.update(exists.id, nameObject)
-        .then(allPersons => setPersons(allPersons))
-        .catch(error => {
-        setClassName('error')
-        setMessage(`Information of ${newName} has already been removed from the server`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        setNewName('')
-        setNewNumber('')
-        setClassName('notif')
-        return
-        })
-
-        setMessage(`Changed number for ${newName}`)
-        setTimeout(() => {
-          setMessage(null)
-        }, 5000)
-        setNewName('')
-        setNewNumber('')
-        return
-      }
-      else {
-        setNewName('')
-        setNewNumber('')
+          .then(allPersons => {
+            setPersons(allPersons)
+            setClassName('notif') 
+            setMessage(`Changed number for ${newName}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+            setNewName('')
+            setNewNumber('')
+          })
+          .catch(error => {
+            setClassName('error')
+            setMessage(`Information of ${newName} has already been removed from the server`)
+            setTimeout(() => {
+              setMessage(null)
+              setClassName('notif')
+            }, 5000)
+            setNewName('')
+            setNewNumber('')
+            return
+          })
         return
       }
-      
     }
 
     personService
-    .create(nameObject)
-    .then(returnedPerson => {
-      setPersons(persons.concat(returnedPerson))
-      setMessage(`Added ${newName}`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000)
-      setNewName('')
-      setNewNumber('')
-    })
+      .create(nameObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
+        setClassName('notif')
+        setMessage(`Added ${newName}`)
+        setTimeout(() => {
+          setMessage(null)
+          setClassName('notif')
+        }, 5000)
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch(error => {
+          setClassName('error')
+          setMessage(error.response.data.error)
+          setTimeout(() => {
+            setMessage(null)
+            setClassName('notif')
+          }, 5000)
+          setNewName('')
+          setNewNumber('')
+      })
   }
 
 
