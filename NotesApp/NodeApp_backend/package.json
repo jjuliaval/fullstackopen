@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "\"echo \"Error: no test specified\" && exit 1\"",
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node --watch index.js",
+    "test": "NODE_ENV=test node --test",
     "build:ui": "rm -rf dist && cd ../testApp/ && npm run build && cp -r dist ../NodeApp_backend/",
     "deploy": "fly deploy",
     "deploy:full": "npm run build:ui && npm run deploy",
@@ -26,6 +26,7 @@
     "@stylistic/eslint-plugin": "^5.9.0",
     "eslint": "^9.39.3",
     "globals": "^17.4.0",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "supertest": "^7.2.2"
   }
 }
