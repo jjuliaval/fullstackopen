@@ -1,10 +1,13 @@
 const assert = require('node:assert')
+const bcrypt = require('bcrypt')
 const { test, after, beforeEach } = require('node:test')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -117,6 +120,61 @@ test('blog likes can be updated', async () => {
     .expect('Content-Type', /application\/json/)
 
   assert.strictEqual(response.body.likes, 10)
+})
+
+test('user creation fails if username is missing', async () => {
+  const usersAtStart = await helper.usersInDb()
+  const newUser = {
+    password: 'secret123'
+  }
+
+  const result = await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+  assert(result.body.error)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('user creation fails if password is missing', async () => {
+  const usersAtStart = await helper.usersInDb()
+  const newUser = {
+    username: 'testuser'
+  }
+
+  const result = await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+  assert(result.body.error)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
+})
+
+test('user creation fails if username is shorter than 3 characters', async () => {
+  const usersAtStart = await helper.usersInDb()
+  const newUser = {
+    username: 'ab',
+    password: 'secret123'
+  }
+
+  const result = await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+  assert(result.body.error)
+
+  const usersAtEnd = await helper.usersInDb()
+  assert.strictEqual(usersAtEnd.length, usersAtStart.length)
 })
 
 after(async () => {
