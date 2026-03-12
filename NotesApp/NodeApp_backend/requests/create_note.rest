@@ -3,5 +3,6 @@ Content-Type: application/json
 
 {
 "content": "does this still work?", 
-"important": false
+"important": false,
+"userId": "69b2848f2a0bc950e554d6e0"
 }
