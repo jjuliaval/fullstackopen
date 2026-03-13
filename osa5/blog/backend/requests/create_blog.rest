@@ -1,8 +1,9 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: Bearer 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY5YjI5YTFiNWQ5ZTc5ZjE1Yjg3ZWI5NCIsImlhdCI6MTc3MzM5NjQwMH0.gxALkjEfZQIixDsImPplDodDb4MRX-cl1fL5y69_Qg8
+
 {
-"title": "does this work now?", 
+"title": "blog make work?", 
 "author": "julia",
 "url": "http://example.com",
 "likes": 1
